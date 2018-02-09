@@ -23,7 +23,7 @@ public class DBService implements AutoCloseable {
 //    update: update the schema.
 //    create: creates the schema, destroying previous data.
 //    create-drop: drop the schema when the SessionFactory is closed explicitly, typically when the application is stopped.
-    private static final String hibernate_hbm2ddl_auto = "create";
+    private static final String hibernate_hbm2ddl_auto = "update";
 
     private final SessionFactory sessionFactory;
 

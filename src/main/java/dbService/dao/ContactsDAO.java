@@ -1,10 +1,8 @@
 package dbService.dao;
 
 import dbService.entity.Contact;
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 
 import java.util.List;
 
