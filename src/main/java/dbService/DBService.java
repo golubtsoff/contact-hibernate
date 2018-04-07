@@ -1,147 +1,91 @@
 package dbService;
 
-import dbService.dao.ContactsDAO;
 import dbService.entity.Contact;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.spi.ServiceException;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
-public class DBService implements AutoCloseable {
-    private static final String hibernate_show_sql = "true";
-//    So the list of possible options are,
-//
+public abstract class DBService {
 //    validate: validate the schema, makes no changes to the database.
 //    update: update the schema.
 //    create: creates the schema, destroying previous data.
 //    create-drop: drop the schema when the SessionFactory is closed explicitly, typically when the application is stopped.
-    private static final String hibernate_hbm2ddl_auto = "update";
+    private static String hibernate_hbm2ddl_auto = null;
 
-    private final SessionFactory sessionFactory;
+    private static final String path = "/database.properties";
+    private static SessionFactory sessionFactory;
 
-    public DBService() {
-        Configuration configuration = getH2Configuration();
+    static {
+        Configuration configuration = getConfiguration();
         sessionFactory = createSessionFactory(configuration);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    private Configuration getMySqlConfiguration() {
-        Configuration configuration = new Configuration();
-        configuration.addAnnotatedClass(Contact.class);
+    private DBService() {
+    }
 
-        configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-        configuration.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
-        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/db_example");
-        configuration.setProperty("hibernate.connection.username", "test");
-        configuration.setProperty("hibernate.connection.password", "test");
-        configuration.setProperty("hibernate.show_sql", hibernate_show_sql);
-        configuration.setProperty("hibernate.hbm2ddl.auto", hibernate_hbm2ddl_auto);
+    public static Transaction getTransaction(){
+        Session session = DBService.getSessionFactory().getCurrentSession();
+        Transaction transaction = DBService.getSessionFactory().getCurrentSession().getTransaction();
+        if (!transaction.isActive()) {
+            transaction = session.beginTransaction();
+        }
+        return transaction;
+    }
+
+    public static void transactionRollback(Transaction transaction){
+        if (transaction.getStatus() == TransactionStatus.ACTIVE
+                || transaction.getStatus() == TransactionStatus.MARKED_ROLLBACK) {
+            transaction.rollback();
+        }
+    }
+
+    public static SessionFactory getSessionFactory(){
+        return sessionFactory;
+    }
+
+    private static Configuration getConfiguration() throws ServiceException {
+        Configuration configuration = new Configuration();
+        addAnnotatedClassToConfiguration(configuration);
+
+        try (InputStream is = DBService.class.getResourceAsStream(path)) {
+            Properties props = new Properties();
+            props.load(is);
+
+            configuration.setProperty("hibernate.dialect", props.getProperty("hibernate.dialect"));
+            configuration.setProperty("hibernate.connection.driver_class", props.getProperty("hibernate.connection.driver_class"));
+            configuration.setProperty("hibernate.connection.url", props.getProperty("hibernate.connection.url"));
+            configuration.setProperty("hibernate.connection.username", props.getProperty("hibernate.connection.username"));
+            configuration.setProperty("hibernate.connection.password", props.getProperty("hibernate.connection.password"));
+            configuration.setProperty("hibernate.show_sql", props.getProperty("hibernate.show_sql"));
+            configuration.setProperty("hibernate.hbm2ddl.auto", props.getProperty("hibernate.hbm2ddl.auto"));
+            configuration.setProperty("hibernate.connection.pool_size", props.getProperty("hibernate.connection.pool_size"));
+            configuration.setProperty("hibernate.current_session_context_class", "thread");
+
+
+            hibernate_hbm2ddl_auto = configuration.getProperty("hibernate.hbm2ddl.auto");
+
+        } catch (IOException e) {
+            throw new ServiceException("Invalid config file " + path);
+        }
         return configuration;
     }
 
-    private Configuration getH2Configuration() {
-        Configuration configuration = new Configuration();
-        configuration.addAnnotatedClass(Contact.class);
-
-        configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        configuration.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
-        configuration.setProperty("hibernate.connection.url", "jdbc:h2:./h2db");
-        configuration.setProperty("hibernate.connection.username", "test");
-        configuration.setProperty("hibernate.connection.password", "test");
-        configuration.setProperty("hibernate.show_sql", hibernate_show_sql);
-        configuration.setProperty("hibernate.hbm2ddl.auto", hibernate_hbm2ddl_auto);
-
-        return configuration;
-    }
-
-
-    public Contact getContact(Long id) throws DBException {
-        try {
-            Session session = sessionFactory.openSession();
-            ContactsDAO dao = new ContactsDAO(session);
-            Contact dataSet = dao.getContact(id);
-            session.close();
-            return dataSet;
-        } catch (HibernateException e) {
-            throw new DBException(e);
-        }
-    }
-
-    public long addContact(Contact contact) throws DBException {
-        try {
-            Session session = sessionFactory.openSession();
-            Transaction transaction = session.beginTransaction();
-            ContactsDAO dao = new ContactsDAO(session);
-            long id = dao.addContact(contact);
-            transaction.commit();
-            session.close();
-            return id;
-        } catch (HibernateException e) {
-            throw new DBException(e);
-        }
-    }
-
-    public void updateContact(Contact contact) throws DBException{
-        try {
-            Session session = sessionFactory.openSession();
-            Transaction transaction = session.beginTransaction();
-            ContactsDAO dao = new ContactsDAO(session);
-            dao.updateContact(contact);
-            transaction.commit();
-            session.close();
-        } catch (HibernateException e) {
-            throw new DBException(e);
-        }
-    }
-
-    public void deleteContact(Long id) throws DBException{
-        try {
-            Session session = sessionFactory.openSession();
-            Transaction transaction = session.beginTransaction();
-            ContactsDAO dao = new ContactsDAO(session);
-            dao.deleteContact(id);
-            transaction.commit();
-            session.close();
-        } catch (HibernateException e) {
-            throw new DBException(e);
-        }
-    }
-
-    public List<Contact> findContacts() throws DBException{
-        try {
-            Session session = sessionFactory.openSession();
-            ContactsDAO dao = new ContactsDAO(session);
-            List<Contact> dataSet = dao.findContacts();
-            session.close();
-            return dataSet;
-        } catch (HibernateException e) {
-            throw new DBException(e);
-        }
-    }
-
-    public void closeConnection(){
+    public static void close(){
         sessionFactory.close();
     }
 
-    public void printConnectInfo() {
-        try {
-            SessionFactoryImpl sessionFactoryImpl = (SessionFactoryImpl) sessionFactory;
-            Connection connection = sessionFactoryImpl.getConnectionProvider().getConnection();
-            System.out.println("DB name: " + connection.getMetaData().getDatabaseProductName());
-            System.out.println("DB version: " + connection.getMetaData().getDatabaseProductVersion());
-            System.out.println("Driver: " + connection.getMetaData().getDriverName());
-            System.out.println("Autocommit: " + connection.getAutoCommit());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+    private static void addAnnotatedClassToConfiguration(Configuration configuration) {
+        configuration.addAnnotatedClass(Contact.class);
     }
 
     private static SessionFactory createSessionFactory(Configuration configuration) {
@@ -149,10 +93,5 @@ public class DBService implements AutoCloseable {
         builder.applySettings(configuration.getProperties());
         ServiceRegistry serviceRegistry = builder.build();
         return configuration.buildSessionFactory(serviceRegistry);
-    }
-
-    @Override
-    public void close() throws Exception {
-        this.closeConnection();
     }
 }

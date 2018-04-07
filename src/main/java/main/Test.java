@@ -1,15 +1,16 @@
 package main;
 
-import dbService.DBException;
-import dbService.DBService;
 import dbService.entity.Contact;
+import service.ContactService;
+import service.ServiceFactory;
 
 import java.util.List;
 
 
 public class Test {
     public static void main(String[] args) throws Exception {
-        try (DBService service = new DBService()) {
+        try {
+            ContactService service = ServiceFactory.getContactServiceInstance();
             Contact contact1 = new Contact("Вася", "Пупкин", "", "");
             Contact contact2 = new Contact("Петя", "Васечкин", "+71234567890", "petia@pisem.net");
             service.addContact(contact1);
@@ -21,6 +22,8 @@ public class Test {
             System.out.println(contact3);
             List<Contact> contacts = service.findContacts();
             System.out.println(contacts);
+        } catch (Exception e){
+
         }
     }
 }

@@ -1,6 +1,5 @@
 package main;
 
-import dbService.DBService;
 import gui.ContactFrame;
 import gui.GuiResource;
 

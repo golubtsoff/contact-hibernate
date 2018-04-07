@@ -1,8 +1,9 @@
 package gui;
 
 import dbService.DBException;
-import dbService.DBService;
 import dbService.entity.Contact;
+import service.ContactService;
+import service.ServiceFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +24,7 @@ public class ContactFrame extends JFrame implements ActionListener
     private static final String EDIT = "EDIT";
     private static final String DELETE = "DELETE";
 
-    private final DBService contactManager = new DBService();
+    private final ContactService contactService = ServiceFactory.getContactServiceInstance();
     private final JTable contactTable = new JTable();
 
     public ContactFrame(){
@@ -91,7 +92,7 @@ public class ContactFrame extends JFrame implements ActionListener
     }
 
     private void loadContact() throws DBException {
-        List<Contact> contacts = contactManager.findContacts();
+        List<Contact> contacts = contactService.findContacts();
         ContactModel cm = new ContactModel(contacts);
         contactTable.setModel(cm);
     }
@@ -105,8 +106,8 @@ public class ContactFrame extends JFrame implements ActionListener
         int sr = contactTable.getSelectedRow();
         if (sr != -1) {
             Long id = Long.parseLong(contactTable.getModel().getValueAt(sr, 0).toString());
-            Contact cnt = contactManager.getContact(id);
-            EditContactDialog ecd = new EditContactDialog(contactManager.getContact(id));
+            Contact cnt = contactService.getContact(id);
+            EditContactDialog ecd = new EditContactDialog(contactService.getContact(id));
             saveContact(ecd);
         } else {
             JOptionPane.showMessageDialog(this, "Вы должны выделить строку для редактирования");
@@ -117,7 +118,7 @@ public class ContactFrame extends JFrame implements ActionListener
         int sr = contactTable.getSelectedRow();
         if (sr != -1) {
             Long id = Long.parseLong(contactTable.getModel().getValueAt(sr, 0).toString());
-            contactManager.deleteContact(id);
+            contactService.deleteContact(id);
             loadContact();
         } else {
             JOptionPane.showMessageDialog(this, "Вы должны выделить строку для удаления");
@@ -128,9 +129,9 @@ public class ContactFrame extends JFrame implements ActionListener
         if (ecd.isSave()) {
             Contact cnt = ecd.getContact();
             if (cnt.getId() != null) {
-                contactManager.updateContact(cnt);
+                contactService.updateContact(cnt);
             } else {
-                contactManager.addContact(cnt);
+                contactService.addContact(cnt);
             }
             loadContact();
         }
