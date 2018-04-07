@@ -13,12 +13,10 @@ public class GuiResource
         initComponentResources(null);
     }
 
-    // Загрузка ресурсов для компонентов
     public static void initComponentResources(String keyLocale) {
         components = (PropertyResourceBundle) PropertyResourceBundle.getBundle(RESOURCES, getLocale(keyLocale));
     }
 
-    // Получение строки для отображения компонента
     public static String getLabel(String formId, String componentId) {
         return components.getString(formId + "." + componentId);
     }

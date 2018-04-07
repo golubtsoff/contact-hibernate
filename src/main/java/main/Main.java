@@ -4,9 +4,6 @@ import dbService.DBService;
 import gui.ContactFrame;
 import gui.GuiResource;
 
-/**
- * Created by Evgeniy Golubtsov on 08.02.2018.
- */
 public class Main {
     public static void main(String[] args) {
         try {

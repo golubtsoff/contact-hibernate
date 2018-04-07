@@ -6,9 +6,7 @@ import dbService.entity.Contact;
 
 import java.util.List;
 
-/**
- * Created by Evgeniy Golubtsov on 08.02.2018.
- */
+
 public class Test {
     public static void main(String[] args) throws Exception {
         try (DBService service = new DBService()) {

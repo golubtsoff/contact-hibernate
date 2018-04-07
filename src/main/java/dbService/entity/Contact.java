@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "contacts")
-public class Contact implements Serializable { // Serializable Important to Hibernate!
+public class Contact implements Serializable {
     private static final long serialVersionUID = -8706689714326132798L;
 
     @Id
@@ -25,7 +25,6 @@ public class Contact implements Serializable { // Serializable Important to Hibe
     @Column(name = "email")
     private String email;
 
-    //Important to Hibernate!
     @SuppressWarnings("UnusedDeclaration")
     public Contact() {
     }
