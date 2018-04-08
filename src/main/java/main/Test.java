@@ -21,9 +21,12 @@ public class Test {
             Contact contact3 = service.getContact(2L);
             System.out.println(contact3);
             List<Contact> contacts = service.findContacts();
-            System.out.println(contacts);
+            System.out.println("Контакты 1" + contacts);
+            service.deleteAll();
+            contacts = service.findContacts();
+            System.out.println("Контакты 2" + contacts);
         } catch (Exception e){
-
+            e.printStackTrace();
         }
     }
 }

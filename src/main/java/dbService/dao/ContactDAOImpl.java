@@ -45,6 +45,14 @@ public class ContactDAOImpl implements ContactDAO {
     }
 
     @Override
+    public void deleteAll() throws HibernateException{
+        DBService.getSessionFactory()
+                .getCurrentSession()
+                .createQuery("delete from Contact")
+                .executeUpdate();
+    }
+
+    @Override
     public List<Contact> findContacts() throws HibernateException {
         return DBService.getSessionFactory()
                 .getCurrentSession()

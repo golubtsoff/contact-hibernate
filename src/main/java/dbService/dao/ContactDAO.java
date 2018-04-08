@@ -10,5 +10,6 @@ public interface ContactDAO {
     Long addContact(Contact contact) throws HibernateException;
     void updateContact(Contact contact) throws HibernateException;
     void deleteContact(Long id) throws HibernateException;
+    void deleteAll() throws HibernateException;
     List<Contact> findContacts() throws HibernateException;
 }

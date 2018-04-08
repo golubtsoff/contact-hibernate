@@ -10,5 +10,6 @@ public interface ContactService {
     long addContact(Contact contact) throws DBException;
     void updateContact(Contact contact) throws DBException;
     void deleteContact(Long id) throws DBException;
+    void deleteAll() throws DBException;
     List<Contact> findContacts() throws DBException;
 }

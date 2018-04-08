@@ -13,6 +13,7 @@ import org.hibernate.service.spi.ServiceException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.LogManager;
 
 public abstract class DBService {
 //    validate: validate the schema, makes no changes to the database.

@@ -71,6 +71,19 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
+    public void deleteAll() throws DBException{
+        Transaction transaction = DBService.getTransaction();
+        try {
+            ContactDAO dao = DaoFactory.getContactDaoInstance();
+            dao.deleteAll();
+            transaction.commit();
+        } catch (HibernateException e) {
+            DBService.transactionRollback(transaction);
+            throw new DBException(e);
+        }
+    }
+
+    @Override
     public List<Contact> findContacts() throws DBException {
         Transaction transaction = DBService.getTransaction();
         try {
