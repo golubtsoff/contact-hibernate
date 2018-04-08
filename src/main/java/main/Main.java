@@ -6,12 +6,15 @@ import gui.GuiResource;
 public class Main {
     public static void main(String[] args) {
         try {
-            if (args.length == 0){
-                GuiResource.initComponentResources();
-            } else if (args.length == 1){
-                GuiResource.initComponentResources(args[0]);
-            } else {
-                return;
+            switch (args.length) {
+                case 0:
+                    GuiResource.initComponentResources();
+                    break;
+                case 1:
+                    GuiResource.initComponentResources(args[0]);
+                    break;
+                default:
+                    return;
             }
             GuiResource.initComponentResources();
         } catch (Exception ex) {

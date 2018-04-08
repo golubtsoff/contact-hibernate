@@ -13,17 +13,10 @@ import org.hibernate.service.spi.ServiceException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.logging.LogManager;
 
 public abstract class DBService {
-//    validate: validate the schema, makes no changes to the database.
-//    update: update the schema.
-//    create: creates the schema, destroying previous data.
-//    create-drop: drop the schema when the SessionFactory is closed explicitly, typically when the application is stopped.
-    private static String hibernate_hbm2ddl_auto = null;
-
     private static final String path = "/database.properties";
-    private static SessionFactory sessionFactory;
+    private static final SessionFactory sessionFactory;
 
     static {
         Configuration configuration = getConfiguration();
@@ -70,9 +63,6 @@ public abstract class DBService {
             configuration.setProperty("hibernate.hbm2ddl.auto", props.getProperty("hibernate.hbm2ddl.auto"));
             configuration.setProperty("hibernate.connection.pool_size", props.getProperty("hibernate.connection.pool_size"));
             configuration.setProperty("hibernate.current_session_context_class", "thread");
-
-
-            hibernate_hbm2ddl_auto = configuration.getProperty("hibernate.hbm2ddl.auto");
 
         } catch (IOException e) {
             throw new ServiceException("Invalid config file " + path);

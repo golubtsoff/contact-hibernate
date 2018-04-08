@@ -118,8 +118,7 @@ public class EditContactDialog extends JDialog implements ActionListener
     }
 
     public Contact getContact() {
-        Contact contact = new Contact(contactId, txtFirstName.getText(),
+        return new Contact(contactId, txtFirstName.getText(),
                 txtLastName.getText(), txtPhone.getText(), txtEmail.getText());
-        return contact;
     }
 }

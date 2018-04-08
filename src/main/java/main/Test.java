@@ -1,5 +1,6 @@
 package main;
 
+import dbService.DBService;
 import dbService.entity.Contact;
 import service.ContactService;
 import service.ServiceFactory;
@@ -8,7 +9,7 @@ import java.util.List;
 
 
 public class Test {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         try {
             ContactService service = ServiceFactory.getContactServiceInstance();
             Contact contact1 = new Contact("Вася", "Пупкин", "", "");
@@ -25,6 +26,7 @@ public class Test {
             service.deleteAll();
             contacts = service.findContacts();
             System.out.println("Контакты 2" + contacts);
+            DBService.close();
         } catch (Exception e){
             e.printStackTrace();
         }

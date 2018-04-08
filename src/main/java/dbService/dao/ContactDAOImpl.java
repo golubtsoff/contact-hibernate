@@ -56,7 +56,7 @@ public class ContactDAOImpl implements ContactDAO {
     public List<Contact> findContacts() throws HibernateException {
         return DBService.getSessionFactory()
                 .getCurrentSession()
-                .createQuery("from Contact")
+                .createQuery("from Contact", Contact.class)
                 .list();
     }
 }

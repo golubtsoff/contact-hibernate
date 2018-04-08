@@ -101,8 +101,8 @@ public class Contact implements Serializable {
 
         if (firstName != null ? !firstName.equals(contact.firstName) : contact.firstName != null) return false;
         if (lastName != null ? !lastName.equals(contact.lastName) : contact.lastName != null) return false;
-        if (phone != null ? !phone.equals(contact.phone) : contact.phone != null) return false;
-        return email != null ? email.equals(contact.email) : contact.email == null;
+        return (phone != null ? phone.equals(contact.phone) : contact.phone == null)
+                && (email != null ? email.equals(contact.email) : contact.email == null);
     }
 
     @Override

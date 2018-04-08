@@ -106,7 +106,6 @@ public class ContactFrame extends JFrame implements ActionListener
         int sr = contactTable.getSelectedRow();
         if (sr != -1) {
             Long id = Long.parseLong(contactTable.getModel().getValueAt(sr, 0).toString());
-            Contact cnt = contactService.getContact(id);
             EditContactDialog ecd = new EditContactDialog(contactService.getContact(id));
             saveContact(ecd);
         } else {

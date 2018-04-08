@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 
 public class ContactServiceImplTest {
 
-    private ContactService service = ServiceFactory.getContactServiceInstance();
+    private final ContactService service = ServiceFactory.getContactServiceInstance();
     private List<Long> listId;
 
     @org.junit.Before
