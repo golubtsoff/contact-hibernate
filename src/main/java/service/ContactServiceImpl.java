@@ -5,9 +5,9 @@ import dbService.DBService;
 import dbService.dao.ContactDAO;
 import dbService.dao.DaoFactory;
 import dbService.entity.Contact;
-import org.hibernate.HibernateException;
 import org.hibernate.Transaction;
 
+import javax.persistence.PersistenceException;
 import java.util.List;
 
 public class ContactServiceImpl implements ContactService {
@@ -21,7 +21,7 @@ public class ContactServiceImpl implements ContactService {
 
             transaction.commit();
             return dataSet;
-        } catch (HibernateException e) {
+        } catch (PersistenceException e) {
             DBService.transactionRollback(transaction);
             throw new DBException(e);
         }
@@ -36,7 +36,7 @@ public class ContactServiceImpl implements ContactService {
 
             transaction.commit();
             return id;
-        } catch (HibernateException e) {
+        } catch (PersistenceException e) {
             DBService.transactionRollback(transaction);
             throw new DBException(e);
         }
@@ -50,7 +50,7 @@ public class ContactServiceImpl implements ContactService {
             dao.updateContact(contact);
 
             transaction.commit();
-        } catch (HibernateException e) {
+        } catch (PersistenceException e) {
             DBService.transactionRollback(transaction);
             throw new DBException(e);
         }
@@ -64,7 +64,7 @@ public class ContactServiceImpl implements ContactService {
             dao.deleteContact(id);
 
             transaction.commit();
-        } catch (HibernateException e) {
+        } catch (PersistenceException e) {
             DBService.transactionRollback(transaction);
             throw new DBException(e);
         }
@@ -77,7 +77,7 @@ public class ContactServiceImpl implements ContactService {
             ContactDAO dao = DaoFactory.getContactDaoInstance();
             dao.deleteAll();
             transaction.commit();
-        } catch (HibernateException e) {
+        } catch (PersistenceException e) {
             DBService.transactionRollback(transaction);
             throw new DBException(e);
         }
@@ -92,7 +92,7 @@ public class ContactServiceImpl implements ContactService {
 
             transaction.commit();
             return dataSet;
-        } catch (HibernateException e) {
+        } catch (PersistenceException e) {
             DBService.transactionRollback(transaction);
             throw new DBException(e);
         }

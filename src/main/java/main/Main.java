@@ -16,7 +16,6 @@ public class Main {
                 default:
                     return;
             }
-            GuiResource.initComponentResources();
         } catch (Exception ex) {
             ex.printStackTrace(System.out);
             return;

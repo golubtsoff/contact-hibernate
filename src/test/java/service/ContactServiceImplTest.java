@@ -2,6 +2,8 @@ package service;
 
 import dbService.DBException;
 import dbService.entity.Contact;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +16,7 @@ public class ContactServiceImplTest {
     private final ContactService service = ServiceFactory.getContactServiceInstance();
     private List<Long> listId;
 
-    @org.junit.Before
+    @Before
     public void setUp() throws Exception {
         service.deleteAll();
         listId = new ArrayList<>();
@@ -23,20 +25,27 @@ public class ContactServiceImplTest {
         listId.add(service.addContact(contact3));
     }
 
-    @org.junit.Test
+    @Test
     public void testGetContact() throws DBException {
         Contact contact = service.getContact(listId.get(0));
         assertEquals("Wrong contact", contact1, contact);
     }
 
-    @org.junit.Test
+    @Test
+    public void testGetNotExistContact() throws DBException {
+        service.deleteContact(listId.get(0));
+        Contact contact = service.getContact(listId.get(0));
+        assertNull("Contact exist", contact);
+    }
+
+    @Test
     public void testAddContact() throws DBException {
         Long id = service.addContact(contact4);
         Contact contact = service.getContact(id);
         assertEquals("Error added contact", contact4, contact);
     }
 
-    @org.junit.Test
+    @Test
     public void testUpdateContact() throws DBException {
         Contact contact = service.getContact(listId.get(0));
         String newPhone = "123-456-78-90";
@@ -47,7 +56,14 @@ public class ContactServiceImplTest {
         assertEquals("Error updated contact", contact, c2);
     }
 
-    @org.junit.Test
+    @Test(expected = DBException.class)
+    public void testUpdateNotExistContact() throws DBException {
+        Contact contact = service.getContact(listId.get(0));
+        service.deleteContact(listId.get(0));
+        service.updateContact(contact);
+    }
+
+    @Test
     public void testDeleteContact() throws DBException {
         Contact contact = service.getContact(listId.get(0));
         assertEquals("Wrong contact", contact1, contact);
@@ -56,14 +72,20 @@ public class ContactServiceImplTest {
         assertNull("Contact not deleted", contact);
     }
 
-    @org.junit.Test
+    @Test(expected = DBException.class)
+    public void testDeleteNotExistContact() throws DBException{
+        service.deleteContact(listId.get(0));
+        service.deleteContact(listId.get(0));
+    }
+
+    @Test
     public void testDeleteAll() throws DBException {
         assertEquals("Contact's list is empty", listId.size(), service.findContacts().size());
         service.deleteAll();
         assertEquals("Contact's list isn't empty", 0, service.findContacts().size());
     }
 
-    @org.junit.Test
+    @Test
     public void testFindContacts() throws DBException {
         assertEquals("Contact's list is empty", listId.size(), service.findContacts().size());
     }
